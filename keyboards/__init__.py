@@ -1,1 +1,1 @@
-from keyboards.client_kb import clientKeyboard
+from keyboards.keyboard import clientMenuKeyboard, clientBackKeyboard, clientRemoveKeyboard, clientAdminMenuKeyboard

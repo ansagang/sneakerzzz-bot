@@ -1,9 +1,10 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from numpy import equal
+from database import sqlite_db
 from create_bot import dp, bot
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
+import configs
 
 class FMSAdmin(StatesGroup):
     photo = State()
@@ -11,18 +12,12 @@ class FMSAdmin(StatesGroup):
     description = State()
     price = State()
 
-ID = None
+ID = configs.admin_id
 
-async def make_changes_command(message: types.Message):
-    global ID
-    ID = message.from_user.id
-    await bot.send_message(message.from_user.id, "Что вы хотите сделать?")
-    await message.delete()
-
-async def download_command(message: types.Message):
-    if message.from_user.id == ID:
+async def download_command(callback_query: types.CallbackQuery):
+    if callback_query.from_user.id == ID:
         await FMSAdmin.photo.set()
-        await message.reply('Загрузи фото')
+        await callback_query.message.reply('Загрузи фото')
 
 async def cancel_handler(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
@@ -58,16 +53,20 @@ async def load_price(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['price'] = float(message.text)
 
-        async with state.proxy() as data:
-            await message.reply(str(data))
+        await sqlite_db.sql_add_command(state)
         await state.finish()
 
+async def delete_handler(callback_query: types.CallbackQuery):
+    await sqlite_db.sql_delete(callback_query.data.replace('delete_', ''))
+    await callback_query.answer(text=f"{callback_query.data.replace('delete_', '')} удалена", show_alert=True)
+
+
 def registerAdminHandlers(dp: Dispatcher):
-    dp.register_message_handler(download_command, commands=['Загрузить'], state=None)
+    dp.register_callback_query_handler(download_command, text='post', state=None)
     dp.register_message_handler(cancel_handler, state="*", commands='Отменить')
     dp.register_message_handler(cancel_handler, Text(equals="Отменить", ignore_case=True), state="*")
     dp.register_message_handler(load_photo, content_types=['photo'], state=FMSAdmin.photo)
     dp.register_message_handler(load_name, state=FMSAdmin.name)
     dp.register_message_handler(load_description, state=FMSAdmin.description)
     dp.register_message_handler(load_price, state=FMSAdmin.price)
-    dp.register_message_handler(make_changes_command, commands=['admin'], is_chat_admin=True)
+    dp.register_callback_query_handler(delete_handler, lambda x: x.data and x.data.startswith('delete_'))
