@@ -40,7 +40,7 @@ async def catalog_handler(callback_query: types.CallbackQuery):
     await sqlite_db.sql_get(callback_query)
 
 async def remove_handler(callback_query: types.CallbackQuery):
-    await bot.delete_message(callback_query.from_user.id , callback_query.message.message_id)
+    await bot.delete_message(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id)
 
 async def product_handler(callback_query: types.CallbackQuery):
     await sqlite_db.sql_get_one(callback_query, callback_query.data.replace('product_', ''))

@@ -36,10 +36,11 @@ async def sql_get_option():
 
 async def sql_search(message):
     clientCatalogKeyboard = InlineKeyboardMarkup()
-    for ret in cur.execute('SELECT * FROM menu WHERE name == ?', (message.text, )).fetchall():
+    for ret in cur.execute(f"SELECT * FROM menu WHERE name like (?)", ('%'+message.text+'%', )).fetchall():
         clientCatalogKeyboard.add(InlineKeyboardButton(f'{ret[1]} • {ret[3]}', callback_data=f'product_{ret[1]}'))
-    clientCatalogKeyboard.add(InlineKeyboardButton('« Назад', callback_data='back'))
-    await bot.edit_message_caption(chat_id=message.from_user.id, message_id=message.message_id, caption=f'Поисковой запрос: {message.text}', reply_markup=clientCatalogKeyboard)
+    clientCatalogKeyboard.add(InlineKeyboardButton('« Назад', callback_data='remove'))
+    await message.delete()
+    await bot.send_message(message.chat.id, f'Поисковой запрос: {message.text}', reply_markup=clientCatalogKeyboard)
 
 async def sql_delete(data):
     cur.execute('DELETE FROM menu WHERE name == ?', (data, ))
