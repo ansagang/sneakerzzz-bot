@@ -5,7 +5,7 @@ import configs
 
 def sql_start():
     global base, cur
-    base = sq.connect('C:/Users/Ансар/Documents/FBMD/Back-End/SneakerzzzBot/sneakerzzz.db')
+    base = sq.connect(configs.bot_database)
     cur = base.cursor()
     if base:
         print('Database connected!')
