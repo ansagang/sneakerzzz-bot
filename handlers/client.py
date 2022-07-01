@@ -1,3 +1,4 @@
+from cmath import exp
 from aiogram import Dispatcher, types
 from create_bot import dp, bot
 from keyboards import clientBackKeyboard, clientMenuKeyboard, clientAdminMenuKeyboard
@@ -6,12 +7,13 @@ import configs
 
 async def start_command(message: types.Message):
     try:
-        await message.delete()
         if message.from_user.id == configs.admin_id:
-            await bot.send_photo(message.from_user.id, configs.bot_logo, caption=f'Здравствуйте, сэр {message.from_user.full_name}', reply_markup=clientAdminMenuKeyboard)
+            await bot.send_photo(message.from_user.id, open('C:/Users/Ансар/Documents/FBMD/Back-End/telegramBots/SneakerzzzBot/assets/sneakerzzz-logo.jpeg', 'rb'), caption=f'Здравствуйте, сэр {message.from_user.full_name}', reply_markup=clientAdminMenuKeyboard)
         else: 
-            await bot.send_photo(message.from_user.id, configs.bot_logo, caption=f'Здравствуйте, {message.from_user.full_name}', reply_markup=clientMenuKeyboard)
-    except:
+            await bot.send_photo(message.from_user.id, open('C:/Users/Ансар/Documents/FBMD/Back-End/telegramBots/SneakerzzzBot/assets/sneakerzzz-logo.jpeg', 'rb'), caption=f'Здравствуйте, {message.from_user.full_name}', reply_markup=clientMenuKeyboard)
+        await message.delete()
+    except Exception as e:
+        print(e)
         await message.reply('Для начала напишите в ЛС: \n https://t.me/SneakerzzzBot')
 
 async def start_handler(callback_query: types.CallbackQuery):
