@@ -45,3 +45,10 @@ async def sql_search(message):
 async def sql_delete(data):
     cur.execute('DELETE FROM menu WHERE name == ?', (data, ))
     base.commit()
+
+async def sql_random(message):
+     for ret in cur.execute('SELECT * FROM menu ORDER BY RANDOM() LIMIT 1').fetchall():
+        if message.from_user.id == configs.admin_id:
+            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'delete_{ret[1]}')).add(InlineKeyboardButton('🔻', callback_data='remove')))
+        else:
+             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton('🔻', callback_data='remove')))
