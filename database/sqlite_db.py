@@ -1,6 +1,7 @@
 import sqlite3 as sq
 from create_bot import bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from adminCheck import adminCheck
 import configs
 
 def sql_start():
@@ -26,7 +27,7 @@ async def sql_get(callback_query):
 
 async def sql_get_one(callback, data):
     for ret in cur.execute('SELECT * FROM menu WHERE name == ?', (data, )).fetchall():
-        if callback.from_user.id == configs.admin_id:
+        if adminCheck(callback):
             await bot.send_photo(callback.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'delete_{ret[1]}')).add(InlineKeyboardButton('🔻', callback_data='remove')))
         else:
              await bot.send_photo(callback.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton('🔻', callback_data='remove')))
@@ -48,7 +49,7 @@ async def sql_delete(data):
 
 async def sql_random(message):
      for ret in cur.execute('SELECT * FROM menu ORDER BY RANDOM() LIMIT 1').fetchall():
-        if message.from_user.id == configs.admin_id:
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'delete_{ret[1]}')).add(InlineKeyboardButton('🔻', callback_data='remove')))
+        if adminCheck(message):
+            await bot.send_photo(message.chat.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'delete_{ret[1]}')).add(InlineKeyboardButton('🔻', callback_data='remove')))
         else:
-             await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton('🔻', callback_data='remove')))
+             await bot.send_photo(message.chat.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[3]}', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton('🔻', callback_data='remove')))

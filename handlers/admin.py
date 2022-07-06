@@ -4,7 +4,8 @@ from database import sqlite_db
 from create_bot import dp, bot
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
-import configs
+from adminCheck import adminCheck
+
 
 class FMSAdmin(StatesGroup):
     photo = State()
@@ -12,15 +13,13 @@ class FMSAdmin(StatesGroup):
     description = State()
     price = State()
 
-ID = configs.admin_id
-
 async def download_command(callback_query: types.CallbackQuery):
-    if callback_query.from_user.id == ID:
+    if adminCheck(callback_query):
         await FMSAdmin.photo.set()
         await callback_query.message.reply('Загрузи фото')
 
 async def cancel_handler(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if adminCheck(message):
         current_state = await state.get_state()
         if current_state is None:
             return
@@ -28,28 +27,28 @@ async def cancel_handler(message: types.Message, state: FSMContext):
         await message.reply('Хорошо!')
 
 async def load_photo(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if adminCheck(message):
         async with state.proxy() as data:
             data['photo'] = message.photo[0].file_id
         await FMSAdmin.next()
         await message.reply('Теперь введите название')
 
 async def load_name(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if adminCheck(message):
         async with state.proxy() as data:
             data['name'] = message.text
         await FMSAdmin.next()
         await message.reply('Теперь введите описание')
 
 async def load_description(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if adminCheck(message):
         async with state.proxy() as data:
             data['description'] = message.text
         await FMSAdmin.next()
         await message.reply('Теперь введите цену')
 
 async def load_price(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
+    if adminCheck(message):
         async with state.proxy() as data:
             data['price'] = float(message.text)
 
