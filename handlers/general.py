@@ -9,7 +9,7 @@ async def filter(message: types.Message):
             .intersection(set(json.load(open('C:/Users/Ансар/Documents/FBMD/Back-End/telegramBots/SneakerzzzBot/cuss_words.json')))) != set():
             await message.delete()
         else:
-            await sqlite_db.sql_search(message)
+            await sqlite_db.sql_search(message, message.text)
     except:
         await message.reply('Для начала напишите в ЛС: \n https://t.me/SneakerzzzBot')
 

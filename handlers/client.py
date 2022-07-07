@@ -3,6 +3,7 @@ from create_bot import dp, bot
 from keyboards import clientBackKeyboard, clientMenuKeyboard, clientAdminMenuKeyboard
 from database import sqlite_db
 from adminCheck import adminCheck
+from aiogram.dispatcher.filters import Text
 
 async def start_command(message: types.Message):
     try:
