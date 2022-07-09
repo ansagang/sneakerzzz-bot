@@ -1,8 +1,8 @@
 import sqlite3 as sq
 from create_bot import bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from adminCheck import adminCheck
 import configs
+from adminCheck import adminCheck
 
 def sql_start():
     global base, cur
